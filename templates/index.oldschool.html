@@ -5,10 +5,12 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
-<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
+<script src="//ajax.lug.ustc.edu.cn/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
   $('#test').on('click', function(e) {
@@ -23,30 +25,30 @@ $(function() {
 });
 //小车前进 forward
 $(function() {
-  $('#car_fwd').on('vmousedown', function(e) {
+  $('#car_fwd').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_fwd',
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="car_fwd vmousedown";
+	document.getElementById("demo").innerHTML="car_fwd mousedown";
 	return false;
   });
 });
 $(function() {
-  $('#car_fwd').on('vmouseup', function(e) {
+  $('#car_fwd').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_stop',
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="car_fwd vmouseup";
+	document.getElementById("demo").innerHTML="car_fwd mouseup";
 	return false;
   });
 });
 // backward
 $(function() {
-  $('#car_bwd').on('vmousedown', function(e) {
+  $('#car_bwd').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_bwd',
 	  function(data) {
@@ -56,7 +58,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#car_bwd').on('vmouseup', function(e) {
+  $('#car_bwd').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_stop',
 	  function(data) {
@@ -67,7 +69,7 @@ $(function() {
 });
 // left turn
 $(function() {
-  $('#car_left').on('vmousedown', function(e) {
+  $('#car_left').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_left',
 	  function(data) {
@@ -77,7 +79,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#car_left').on('vmouseup', function(e) {
+  $('#car_left').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_stop',
 	  function(data) {
@@ -88,7 +90,7 @@ $(function() {
 });
 // right turn
 $(function() {
-  $('#car_right').on('vmousedown', function(e) {
+  $('#car_right').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_right',
 	  function(data) {
@@ -98,7 +100,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#car_right').on('vmouseup', function(e) {
+  $('#car_right').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/car_stop',
 	  function(data) {
@@ -109,7 +111,7 @@ $(function() {
 });
 // 摄像头上翻
 $(function() {
-  $('#camera_up').on('vmousedown', function(e) {
+  $('#camera_up').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_up',
 	  function(data) {
@@ -119,7 +121,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#camera_up').on('vmouseup', function(e) {
+  $('#camera_up').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_stop',
 	  function(data) {
@@ -130,7 +132,7 @@ $(function() {
 });
 // 摄像头下翻
 $(function() {
-  $('#camera_down').on('vmousedown', function(e) {
+  $('#camera_down').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_down',
 	  function(data) {
@@ -140,7 +142,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#camera_down').on('vmouseup', function(e) {
+  $('#camera_down').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_stop',
 	  function(data) {
@@ -151,7 +153,7 @@ $(function() {
 });
 // 摄像头左转
 $(function() {
-  $('#camera_left').on('vmousedown', function(e) {
+  $('#camera_left').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_left',
 	  function(data) {
@@ -161,7 +163,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#camera_left').on('vmouseup', function(e) {
+  $('#camera_left').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_stop',
 	  function(data) {
@@ -172,7 +174,7 @@ $(function() {
 });
 // 摄像头右转
 $(function() {
-  $('#camera_right').on('vmousedown', function(e) {
+  $('#camera_right').on('mousedown', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_right',
 	  function(data) {
@@ -182,7 +184,7 @@ $(function() {
   });
 });
 $(function() {
-  $('#camera_right').on('vmouseup', function(e) {
+  $('#camera_right').on('mouseup', function(e) {
 	e.preventDefault()
 	$.getJSON('/camera_stop',
 	  function(data) {
@@ -223,23 +225,23 @@ $(function() {
   <body>
     <center>
     <img src="http://192.168.31.186:8080/?action=stream" />
+	<div class="container">
+	<a href="#" id="camera_up"><button class="btn btn-outline-light text-dark">摄像头上翻</button></a>
+	<a href="#" id="camera_down"><button class="btn btn-outline-light text-dark">下翻</button></a>
+	<a href="#" id="camera_left"><button class="btn btn-outline-light text-dark">左转</button></a>
+	<a href="#" id="camera_right"><button class="btn btn-outline-light text-dark">右转</button></a>
+	<a href="#" id="camera_reset"><button class="btn btn-outline-light text-dark">重置</button></a>
+	</div>
+	<div class="container">
 
-    <div data-role="controlgroup" data-type="horizontal">
-	<a href="#" id="car_fwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">前进</button></a>
-	<a href="#" id="car_bwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">后退</button></a>
-	<a href="#" id="car_left"><button class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left">左转</button></a>
-	<a href="#" id="car_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右转</button></a>
+	<a href="#" id="car_fwd"><button class="btn btn-outline-light text-dark">前进</button></a>
+	<a href="#" id="car_bwd"><button class="btn btn-outline-light text-dark">后退</button></a>
+	<a href="#" id="car_left"><button class="btn btn-outline-light text-dark">左转</button></a>
+	<a href="#" id="car_right"><button class="btn btn-outline-light text-dark">右转</button></a>
 	</div>
-    <div data-role="controlgroup" data-type="horizontal">
-	<a href="#" id="camera_up"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">摄像头上翻</button></a>
-	<a href="#" id="camera_down"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">下翻</button></a>
-	<a href="#" id="camera_left"><button class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left">左转</button></a>
-	<a href="#" id="camera_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右转</button></a>
-	<a href="#" id="camera_reset"><button class="ui-btn ui-btn-inline ui-icon-back ui-btn-icon-left">重置</button></a>
-	</div>
-	<div data-role="controlgroup" data-type="horizontal">
-	<a href="#" id="light_on"><button class="ui-btn">七彩灯亮</button></a>
-	<a href="#" id="light_off"><button class="ui-btn">七彩灯灭</button></a>
+	<div class="container">
+	<a href="#" id="light_on"><button class="btn btn-outline-light text-dark">七彩灯亮</button></a>
+	<a href="#" id="light_off"><button class="btn btn-outline-light text-dark">七彩灯灭</button></a>
 	</div>
 	<p id="demo">nothing</p>
     </center>
