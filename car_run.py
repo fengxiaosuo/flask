@@ -107,6 +107,26 @@ class Car:
     Car.pwm_ENA.start(100)
     Car.pwm_ENB.start(100)
 
+  #小车原地左转
+  def spin_left():
+    print(sys._getframe().f_code.co_name)
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
+    Car.pwm_ENA.ChangeDutyCycle(80)
+    Car.pwm_ENB.ChangeDutyCycle(80)
+
+  #小车原地右转
+  def spin_right():
+    print(sys._getframe().f_code.co_name)
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+    Car.pwm_ENA.ChangeDutyCycle(80)
+    Car.pwm_ENB.ChangeDutyCycle(80)
+
   #小车停止
   def stop(self):
     print(sys._getframe().f_code.co_name)

@@ -88,8 +88,8 @@ class Camera(object):
     pos = g_updown_pos
     print ('camera up at pos='+str(pos))
     while Camera.allow_updown_moving == 1:
-        if g_updown_pos >= 120:
-            g_updown_pos = 120
+        if g_updown_pos >= 160:
+            g_updown_pos = 160
             break
         pos += 0.7
         g_updown_pos = pos

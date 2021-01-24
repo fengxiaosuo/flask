@@ -27,7 +27,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="test";
+	document.getElementById("status").innerHTML="test";
 	return false;
   });
 });
@@ -39,7 +39,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="car_fwd vmousedown";
+	document.getElementById("status").innerHTML="car_fwd vmousedown";
 	return false;
   });
 });
@@ -50,7 +50,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="car_fwd vmouseup";
+	document.getElementById("status").innerHTML="car_fwd vmouseup";
 	return false;
   });
 });
@@ -62,6 +62,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_bwd vmousedown";
 	return false;
   });
 });
@@ -72,6 +73,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_bwd vmouseup";
 	return false;
   });
 });
@@ -83,6 +85,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_left vmousedown";
 	return false;
   });
 });
@@ -93,6 +96,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_left vmouseup";
 	return false;
   });
 });
@@ -104,6 +108,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_right vmousedown";
 	return false;
   });
 });
@@ -114,6 +119,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="car_right vmouseup";
 	return false;
   });
 });
@@ -125,6 +131,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="camera_up";
 	return false;
   });
 });
@@ -146,6 +153,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="camera_down";
 	return false;
   });
 });
@@ -167,6 +175,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="camera_left";
 	return false;
   });
 });
@@ -188,6 +197,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="camera_right";
 	return false;
   });
 });
@@ -209,6 +219,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="camera_reset";
 	return false;
   });
 });
@@ -220,7 +231,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="七彩灯亮";
+	document.getElementById("status").innerHTML="七彩灯亮";
 	return false;
   });
 });
@@ -232,7 +243,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("demo").innerHTML="七彩灯灭";
+	document.getElementById("status").innerHTML="七彩灯灭";
 	return false;
   });
 });
@@ -268,17 +279,15 @@ $(function() {
 		  function(data) {
 		  //do nothing
 		});
-		document.getElementById("demo").innerHTML="七彩灯on";
+		document.getElementById("status").innerHTML="七彩灯on";
 	} else
 	{
 		$.getJSON('/light_off',
 		  function(data) {
 		  //do nothing
 		});
-		document.getElementById("demo").innerHTML="七彩灯off";
+		document.getElementById("status").innerHTML="七彩灯off";
 	}
-
-
 	return false;
   });
 });
@@ -291,6 +300,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="radar_left";
 	return false;
   });
 });
@@ -312,6 +322,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="radar_right";
 	return false;
   });
 });
@@ -333,6 +344,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="radar_reset";
 	return false;
   });
 });
@@ -344,6 +356,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="radar_reset_left";
 	return false;
   });
 });
@@ -355,18 +368,76 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
+	document.getElementById("status").innerHTML="radar_reset_right";
 	return false;
   });
 });
+
+
+
 </script>
+<script language=javascript>
+//获取传感器值
+var int=self.setInterval("sensor_get_value()",500)
+$.ajax({
+url: "sensor",
+type: "POST",
+dataType: "json",
+success: function (data) {
+  document.getElementById("infrared_sensor").innerHTML=data.infrared_sensor;
+  document.getElementById("track_sensor").innerHTML=data.track_sensor;
+  document.getElementById("light_sensor").innerHTML=data.light_sensor;
+  document.getElementById("radar_distance_calculate").innerHTML=Math.round(data.radar_distance_calculate);
+}
+})
+function sensor_get_value()
+{
+	/*
+	var date=new Date();
+	document.getElementById("status").innerHTML=date.toLocaleTimeString();
+	*/
+	$.ajax({
+	url: "sensor",
+	type: "POST",
+	dataType: "json",
+	success: function (data) {
+	  document.getElementById("infrared_sensor").innerHTML=data.infrared_sensor;
+	  document.getElementById("track_sensor").innerHTML=data.track_sensor;
+	  document.getElementById("light_sensor").innerHTML=data.light_sensor;
+	  document.getElementById("radar_distance_calculate").innerHTML=Math.round(data.radar_distance_calculate);
+	}
+	})
+	return false;
+}
 
-
+</script>
 
   </head>
   <body>
-    <center>
-    <img style="max-width:90%; height: auto;" src="http://192.168.31.186:8080/?action=stream" />
-
+  <div data-role="panel" id="myPanel"> 
+    <h2>四驱车设置</h2>
+	<input type="checkbox" id="camera_switch"><label for="camera_switch">摄像头切换</label>
+	<label for="points">灯光选择</label>
+	<ul data-role="listview" data-inset="true">    
+	<li data-icon="plus"><a href="#">红</a></li>
+	<li data-icon="minus"><a href="#">绿</a></li>
+	<li data-icon="delete"><a href="#">蓝</a></li>
+	<li data-icon="location"><a href="#">白</a></li>   
+	<li data-icon="false"><a href="#">七彩循环</a></li>
+	</ul>
+    <form method="post" action="demoform.asp">
+      <label for="points">车速</label>
+      <input type="range" name="points" id="points" value="100" min="0" max="100">
+    </form>
+  </div>
+  </div> 
+  	<center>
+	<div data-role="header">
+	<a href="#myPanel"  id="setup" class="ui-btn ui-corner-all ui-shadow ui-icon-bars ui-btn-icon-left">设置</a>
+	<h1>树莓派四驱车</h1>
+	<button id="buzzer" class="ui-btn ui-btn-inline ui-icon-audio ui-btn-icon-left">鸣笛</button>
+	</div>
+    <img style="max-width:100%; height: auto;" src="http://192.168.31.186:8080/?action=stream" />
     <div data-role="controlgroup" data-type="horizontal">
 	<a href="#" id="car_fwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">前进</button></a>
 	<a href="#" id="car_bwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">后退</button></a>
@@ -387,11 +458,17 @@ $(function() {
 	<a href="#" id="radar_reset_left"><button class="ui-btn ui-btn-inline">左</button></a>
 	<a href="#" id="radar_reset_right"><button class="ui-btn ui-btn-inline">右</button></a>
 	</div>
-	<div data-role="controlgroup" data-type="horizontal">
-	<a href="#"><input type="checkbox" id="light"><label for="light">七彩灯</label></a>
-	<a href="#" id="buzzer"><button class="ui-btn ui-btn-inline ui-icon-audio ui-btn-icon-left">鸣笛</button></a>
+
+	<p id="status">状态框</p>
+	<div data-role="footer" style="text-align:center;">
+	  <div data-role="controlgroup" data-type="horizontal">
+		<a href="#" class="ui-btn">红外 <b id="infrared_sensor">1 2</b></a>
+		<a href="#" class="ui-btn">循迹 <b id="track_sensor">1 2 3 4</b></a>
+		<a href="#" class="ui-btn">光敏 <b id="light_sensor">1 2</b></a>
+		<a href="#" class="ui-btn">雷达 <b id="radar_distance_calculate">n/a</b>cm</a>
+		<input type="checkbox" id="light"><label for="light">灯</label>
+	  </div>
 	</div>
-	<p id="demo">nothing</p>
     </center>
   </body>
 </html>

@@ -1,9 +1,11 @@
 # -*- coding:UTF-8 -*-
 
 from flask import Flask, redirect, url_for, render_template
+import json
 import color
 from car_run import Car
 from camera import Camera
+from sensor import Sensor
 
 app = Flask(__name__)
 
@@ -13,8 +15,8 @@ def show_index():
     return render_template('index.html')
 
 #rendering the HTML page which has the button
-@app.route('/json')
-def json():
+@app.route('/json1')
+def json1():
     return render_template('index.html')
 
 #background process happening without any refreshing
@@ -161,6 +163,37 @@ def radar_reset_right():
     cam.radar_reset_left() #左右正好相反
     return ("nothing")
 
+#传感器
+#红外
+@app.route('/infrared_sensor', methods=['GET', 'POST'])
+def infrared_sensor():
+    sen = Sensor()
+    print "红外:"
+    print sen.infrared_sensor()
+    ret = {}
+    ret['infrared_sensor'] = sen.infrared_sensor()
+    json_str = json.dumps(ret)
+    return json_str
+
+#所有传感器
+@app.route('/sensor', methods=['GET', 'POST'])
+def sensor():
+    sen = Sensor()
+    print "红外:"
+    print sen.infrared_sensor()
+    print "循迹:"
+    print sen.track_sensor()
+    print "光敏电阻:"
+    print sen.light_sensor()
+    print "超声波雷达测距(单位cm):"
+    print sen.radar_distance_calculate()
+    ret = {}
+    ret['infrared_sensor'] = sen.infrared_sensor()
+    ret['track_sensor'] = sen.track_sensor()
+    ret['light_sensor'] = sen.light_sensor()
+    ret['radar_distance_calculate'] = sen.radar_distance_calculate()
+    json_str = json.dumps(ret)
+    return json_str
 
 if __name__ == '__main__':
     app.run("0.0.0.0",3000)
