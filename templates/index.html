@@ -2,7 +2,17 @@
 <html>
   <head>
     <title>4WD Robot</title>
-
+<style>
+/* 禁用长按复制 */
+*{
+-webkit-touch-callout:none; /*系统默认菜单被禁用*/
+-webkit-user-select:none; /*webkit浏览器*/
+-khtml-user-select:none; /*早期浏览器*/
+-moz-user-select:none;/*火狐*/
+-ms-user-select:none; /*IE10*/
+user-select:none;
+}
+</style>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
@@ -191,6 +201,17 @@ $(function() {
 	return false;
   });
 });
+// 摄像头复位
+$(function() {
+  $('#camera_reset').on('click', function(e) {
+	e.preventDefault()
+	$.getJSON('/camera_reset',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
 //七彩灯亮
 $(function() {
   $('#light_on').on('click', function(e) {
@@ -199,7 +220,7 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("light").innerHTML="七彩灯亮";
+	document.getElementById("demo").innerHTML="七彩灯亮";
 	return false;
   });
 });
@@ -211,7 +232,129 @@ $(function() {
 	  function(data) {
 	  //do nothing
 	});
-	document.getElementById("light").innerHTML="七彩灯灭";
+	document.getElementById("demo").innerHTML="七彩灯灭";
+	return false;
+  });
+});
+//蜂鸣器
+$(function() {
+  $('#buzzer').on('vmousedown', function(e) {
+	e.preventDefault()
+	$.getJSON('/buzzer/true',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+$(function() {
+  $('#buzzer').on('vmouseup', function(e) {
+	e.preventDefault()
+	$.getJSON('/buzzer/false',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+//七彩灯
+$(function() {
+  $('#light').on('click', function(e) {
+	e.preventDefault()
+	is_light_on = $("#light").prop("checked")
+	if(is_light_on)
+	{
+		$.getJSON('/light_on',
+		  function(data) {
+		  //do nothing
+		});
+		document.getElementById("demo").innerHTML="七彩灯on";
+	} else
+	{
+		$.getJSON('/light_off',
+		  function(data) {
+		  //do nothing
+		});
+		document.getElementById("demo").innerHTML="七彩灯off";
+	}
+
+
+	return false;
+  });
+});
+//雷达舵机
+//左移
+$(function() {
+  $('#radar_left').on('vmousedown', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_left',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+$(function() {
+  $('#radar_left').on('vmouseup', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_stop',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+//右移
+$(function() {
+  $('#radar_right').on('vmousedown', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_right',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+$(function() {
+  $('#radar_right').on('vmouseup', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_stop',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+// 雷达舵机复位
+$(function() {
+  $('#radar_reset').on('click', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_reset',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+// 雷达舵机复位左
+$(function() {
+  $('#radar_reset_left').on('click', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_reset_left',
+	  function(data) {
+	  //do nothing
+	});
+	return false;
+  });
+});
+// 雷达舵机复位右
+$(function() {
+  $('#radar_reset_right').on('click', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_reset_right',
+	  function(data) {
+	  //do nothing
+	});
 	return false;
   });
 });
@@ -222,7 +365,7 @@ $(function() {
   </head>
   <body>
     <center>
-    <img src="http://192.168.31.186:8080/?action=stream" />
+    <img style="max-width:90%; height: auto;" src="http://192.168.31.186:8080/?action=stream" />
 
     <div data-role="controlgroup" data-type="horizontal">
 	<a href="#" id="car_fwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">前进</button></a>
@@ -231,15 +374,22 @@ $(function() {
 	<a href="#" id="car_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右转</button></a>
 	</div>
     <div data-role="controlgroup" data-type="horizontal">
-	<a href="#" id="camera_up"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">摄像头上翻</button></a>
-	<a href="#" id="camera_down"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">下翻</button></a>
-	<a href="#" id="camera_left"><button class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left">左转</button></a>
-	<a href="#" id="camera_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右转</button></a>
-	<a href="#" id="camera_reset"><button class="ui-btn ui-btn-inline ui-icon-back ui-btn-icon-left">重置</button></a>
+	<a href="#" id="camera_up"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">上</button></a>
+	<a href="#" id="camera_down"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">下</button></a>
+	<a href="#" id="camera_left"><button class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left">左</button></a>
+	<a href="#" id="camera_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右</button></a>
+	<a href="#" id="camera_reset"><button class="ui-btn ui-btn-inline ui-icon-back ui-btn-icon-left">复位</button></a>
+	</div>
+    <div data-role="controlgroup" data-type="horizontal">
+	<a href="#" id="radar_left"><button class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left">左</button></a>
+	<a href="#" id="radar_right"><button class="ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-left">右</button></a>
+	<a href="#" id="radar_reset"><button class="ui-btn ui-btn-inline ui-icon-back ui-btn-icon-left">复位中</button></a>
+	<a href="#" id="radar_reset_left"><button class="ui-btn ui-btn-inline">左</button></a>
+	<a href="#" id="radar_reset_right"><button class="ui-btn ui-btn-inline">右</button></a>
 	</div>
 	<div data-role="controlgroup" data-type="horizontal">
-	<a href="#" id="light_on"><button class="ui-btn">七彩灯亮</button></a>
-	<a href="#" id="light_off"><button class="ui-btn">七彩灯灭</button></a>
+	<a href="#"><input type="checkbox" id="light"><label for="light">七彩灯</label></a>
+	<a href="#" id="buzzer"><button class="ui-btn ui-btn-inline ui-icon-audio ui-btn-icon-left">鸣笛</button></a>
 	</div>
 	<p id="demo">nothing</p>
     </center>

@@ -11,7 +11,7 @@ LED_G = 27
 LED_B = 24
 
 #舵机引脚定义
-FrontServoPin = 23
+ServoRadarPin = 23
 ServoUpDownPin = 9
 ServoLeftRightPin = 11
 
@@ -24,13 +24,16 @@ GPIO.setwarnings(False)
 #初始化上下左右角度为90度
 g_leftright_pos = 90
 g_updown_pos = 90
+g_radar_pos = 90
 
 class Camera(object):
   _instance_lock = threading.Lock()
   allow_leftright_moving = 0
   allow_updown_moving = 0
+  allow_radar_moving = 0
   updown_servo = None
   leftright_servo = None
+  radar_servo = None
 
   # 一个类只允许一个实例
   def __new__(cls, *args, **kwargs):
@@ -46,13 +49,17 @@ class Camera(object):
     #舵机引脚设置为输出模式
     GPIO.setup(ServoUpDownPin, GPIO.OUT)
     GPIO.setup(ServoLeftRightPin, GPIO.OUT)
+    GPIO.setup(ServoRadarPin, GPIO.OUT)
     #设置pwm引脚和频率为50hz
     if Camera.updown_servo == None :
         Camera.updown_servo = GPIO.PWM(ServoUpDownPin, 50)
     if Camera.leftright_servo == None :
         Camera.leftright_servo = GPIO.PWM(ServoLeftRightPin, 50)
+    if Camera.radar_servo == None :
+        Camera.radar_servo = GPIO.PWM(ServoRadarPin, 50)
     Camera.updown_servo.start(0)
     Camera.leftright_servo.start(0)
+    Camera.radar_servo.start(0)
     
   #摄像头舵机左右旋转到指定角度
   def leftrightservo_appointed_detection(self, pos): 
@@ -68,70 +75,139 @@ class Camera(object):
     	time.sleep(0.02)							#等待20ms周期结束
     	#Camera.updown_servo.ChangeDutyCycle(0)	    #归零信号
 
+  #雷达舵机左右旋转到指定角度
+  def radarservo_appointed_detection(self, pos):  
+    for i in range(1):  
+    	Camera.radar_servo.ChangeDutyCycle(2.5 + 10 * pos/180)
+    	time.sleep(0.02)							#等待20ms周期结束
+    	#Camera.radar_servo.ChangeDutyCycle(0)	    #归零信号
+
   def up(self):
-    print 'up'
     Camera.allow_updown_moving = 1
     global g_updown_pos
     pos = g_updown_pos
-    print 'down pos='+str(pos)
+    print ('camera up at pos='+str(pos))
     while Camera.allow_updown_moving == 1:
-        print ('down='+str(pos) + ' Camera.allow_updown_moving='+str(Camera.allow_updown_moving))
-        self.updownservo_appointed_detection(pos)
+        if g_updown_pos >= 120:
+            g_updown_pos = 120
+            break
         pos += 0.7
         g_updown_pos = pos
-        if g_updown_pos >= 180:
-            g_updown_pos = 180
-            break
+        self.updownservo_appointed_detection(pos)
+        print ('updown_pos='+str(pos))
 
   def down(self):
-    print 'up'
     Camera.allow_updown_moving = 1
     global g_updown_pos
     pos = g_updown_pos
-    print 'down pos='+str(pos)
+    print ('camera down at pos='+str(pos))
     while Camera.allow_updown_moving == 1:
-        print ('down='+str(pos) + ' Camera.allow_updown_moving='+str(Camera.allow_updown_moving))
-        self.updownservo_appointed_detection(pos)
-        pos -= 0.7
-        g_updown_pos = pos
         if g_updown_pos <= 45:
             g_updown_pos = 45
             break
+        pos -= 0.7
+        g_updown_pos = pos
+        self.updownservo_appointed_detection(pos)
+        print ('updown_pos='+str(pos))
 
   def left(self):
-    print 'left'
     Camera.allow_leftright_moving = 1
     global g_leftright_pos
     pos = g_leftright_pos
-    print 'left pos='+str(pos)
+    print ('camera left at pos='+str(pos))
     while Camera.allow_leftright_moving == 1:
-        print ('left='+str(pos) + ' Camera.allow_leftright_moving='+str(Camera.allow_leftright_moving))
-        self.leftrightservo_appointed_detection(pos)
-        pos += 0.7
-        g_leftright_pos = pos
         if g_leftright_pos >= 180:
             g_leftright_pos = 180
             break
+        pos += 0.7
+        g_leftright_pos = pos
+        self.leftrightservo_appointed_detection(pos)
+        print ('leftright_pos='+str(pos))
 
   def right(self):
-    print 'right'
     Camera.allow_leftright_moving = 1
     global g_leftright_pos
     pos = g_leftright_pos
+    print ('camera right at pos='+str(pos))
     while Camera.allow_leftright_moving == 1:
-        print ('left='+str(pos) + ' Camera.allow_leftright_moving='+str(Camera.allow_leftright_moving))
-        self.leftrightservo_appointed_detection(pos)
-        pos -= 0.7
-        g_leftright_pos = pos
         if g_leftright_pos <= 0:
             g_leftright_pos =  0
             break
+        pos -= 0.7
+        g_leftright_pos = pos
+        self.leftrightservo_appointed_detection(pos)
+        print ('leftright_pos='+str(pos))
 
   def stop(self):
+    print ('camera stop at updown_pos=['+str(g_updown_pos)+'],leftright_pos=['+str(g_leftright_pos)+']')
     Camera.allow_leftright_moving = 0
     Camera.allow_updown_moving = 0
 
   def reset(self):
+    global g_updown_pos
+    global g_leftright_pos
     self.leftrightservo_appointed_detection(90)
     self.updownservo_appointed_detection(90)
-    time.sleep(1)
+    time.sleep(0.5)
+    g_updown_pos = 90   #复位到90度
+    g_leftright_pos = 90    #复位到90度
+    Camera.leftright_servo.ChangeDutyCycle(0)	#归零信号
+    Camera.updown_servo.ChangeDutyCycle(0)	#归零信号
+
+  #雷达相关，左右停，重置
+  #我的雷达反过来装的，所以左右和原来的设置是相反的
+  def radar_left(self):
+    Camera.allow_radar_moving = 1
+    global g_radar_pos
+    pos = g_radar_pos
+    print ('radar_left at pos='+str(pos))
+    while Camera.allow_radar_moving == 1:
+        if g_radar_pos >= 180:
+            g_radar_pos = 180
+            break
+        pos += 0.7
+        g_radar_pos = pos
+        self.radarservo_appointed_detection(pos)
+        print ('g_radar_pos='+str(pos))
+
+  def radar_right(self):
+    Camera.allow_radar_moving = 1
+    global g_radar_pos
+    pos = g_radar_pos
+    print ('radar_right at pos='+str(pos))
+    while Camera.allow_radar_moving == 1:
+        if g_radar_pos <= 0:
+            g_radar_pos =  0
+            break
+        pos -= 0.7
+        g_radar_pos = pos
+        self.radarservo_appointed_detection(pos)
+        print ('g_radar_pos='+str(pos))
+
+  def radar_stop(self):
+    print ('radar_stop at pos=['+str(g_radar_pos)+']')
+    Camera.allow_radar_moving = 0
+
+  def radar_reset(self):
+    global g_radar_pos
+    self.radarservo_appointed_detection(90)
+    time.sleep(0.5)
+    g_radar_pos = 90    #复位到90度
+    Camera.radar_servo.ChangeDutyCycle(0)	#归零信号
+    print ('radar_reset at pos='+str(g_radar_pos))
+
+  def radar_reset_left(self):
+    global g_radar_pos
+    self.radarservo_appointed_detection(180)
+    time.sleep(0.5)
+    g_radar_pos = 180    #复位到90度
+    Camera.radar_servo.ChangeDutyCycle(0)	#归零信号
+    print ('radar_reset_left at pos='+str(g_radar_pos))
+
+  def radar_reset_right(self):
+    global g_radar_pos
+    self.radarservo_appointed_detection(0)
+    time.sleep(0.5)
+    g_radar_pos = 0    #复位到90度
+    Camera.radar_servo.ChangeDutyCycle(0)	#归零信号
+    print ('radar_reset_right at pos='+str(g_radar_pos))

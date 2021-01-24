@@ -7,10 +7,23 @@ from camera import Camera
 
 app = Flask(__name__)
 
+# index
 @app.route('/')
 def show_index():
     return render_template('index.html')
 
+#rendering the HTML page which has the button
+@app.route('/json')
+def json():
+    return render_template('index.html')
+
+#background process happening without any refreshing
+@app.route('/background_process_test')
+def background_process_test():
+    print ("Hello")
+    return ("nothing")
+
+# for car test
 @app.route('/car_run', methods=['GET', 'POST'])
 def car_run():
     car = Car()
@@ -82,15 +95,10 @@ def camera_stop():
     cam.stop()
     return ("nothing")
 
-#rendering the HTML page which has the button
-@app.route('/json')
-def json():
-    return render_template('index.html')
-
-#background process happening without any refreshing
-@app.route('/background_process_test')
-def background_process_test():
-    print ("Hello")
+@app.route('/camera_reset')
+def camera_reset():
+    cam = Camera()
+    cam.reset()
     return ("nothing")
 
 # 七彩灯
@@ -104,7 +112,54 @@ def light_off():
     color.off()
     return ("nothing")
 
+# 蜂鸣器
+@app.route('/buzzer/<buzzeron>', methods=['GET', 'POST'])
+def buzzer(buzzeron):
+    car = Car()
+    print "car buzzeron="+str(buzzeron)
+    if buzzeron == 'true':
+        car.buzzer(True)
+    else:
+        car.buzzer(False)
+    return ("nothing")
 
+# 雷达舵机
+#我的雷达反过来装的，所以左右和原来的设置是相反的
+@app.route('/radar_left')
+def radar_left():
+    cam = Camera()
+    cam.radar_right() #左右正好相反
+    return ("nothing")
+
+@app.route('/radar_right')
+def radar_right():
+    cam = Camera()
+    cam.radar_left() #左右正好相反
+    return ("nothing")
+
+@app.route('/radar_stop')
+def radar_stop():
+    cam = Camera()
+    cam.radar_stop()
+    return ("nothing")
+
+@app.route('/radar_reset')
+def radar_reset():
+    cam = Camera()
+    cam.radar_reset()
+    return ("nothing")
+
+@app.route('/radar_reset_left')
+def radar_reset_left():
+    cam = Camera()
+    cam.radar_reset_right() #左右正好相反
+    return ("nothing")
+
+@app.route('/radar_reset_right')
+def radar_reset_right():
+    cam = Camera()
+    cam.radar_reset_left() #左右正好相反
+    return ("nothing")
 
 
 if __name__ == '__main__':
