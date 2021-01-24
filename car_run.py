@@ -3,6 +3,9 @@ import RPi.GPIO as GPIO
 import time
 import threading
 import sys
+import color
+from sensor import Sensor
+from camera import Camera
 
 #小车电机引脚定义
 IN1 = 20
@@ -20,6 +23,8 @@ GPIO.setmode(GPIO.BCM)
 
 #忽略警告信息
 GPIO.setwarnings(False)
+
+g_radar_self_drive = False
 
 class Car:
   _instance_lock = threading.Lock()
@@ -53,48 +58,48 @@ class Car:
     GPIO.setup(buzzer,GPIO.OUT,initial=GPIO.HIGH)
 
   #小车前进
-  def forward(self):
+  def forward(self, speed=100, speed2=100):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     #启动PWM设置占空比为100（0--100）
-    Car.pwm_ENA.start(100)
-    Car.pwm_ENB.start(100)
+    Car.pwm_ENA.start(speed)
+    Car.pwm_ENB.start(speed2)
 
   #小车后退
-  def backward(self):
+  def backward(self, speed=100, speed2=100):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     #启动PWM设置占空比为100（0--100）
-    Car.pwm_ENA.start(100)
-    Car.pwm_ENB.start(100)
+    Car.pwm_ENA.start(speed)
+    Car.pwm_ENB.start(speed2)
 
   #小车左转
-  def leftturn(self):
+  def leftturn(self, speed=100, speed2=100):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     #启动PWM设置占空比为100（0--100）
-    Car.pwm_ENA.start(100)
-    Car.pwm_ENB.start(100)
+    Car.pwm_ENA.start(speed)
+    Car.pwm_ENB.start(speed2)
 
   #小车右转
-  def rightturn(self):
+  def rightturn(self, speed=100, speed2=100):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
     #启动PWM设置占空比为100（0--100）
-    Car.pwm_ENA.start(100)
-    Car.pwm_ENB.start(100)
+    Car.pwm_ENA.start(speed)
+    Car.pwm_ENB.start(speed2)
 
   #小车掉头
   def uturn(self):
@@ -108,24 +113,24 @@ class Car:
     Car.pwm_ENB.start(100)
 
   #小车原地左转
-  def spin_left():
+  def spin_left(self, speed=80, speed2=80):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
-    Car.pwm_ENA.ChangeDutyCycle(80)
-    Car.pwm_ENB.ChangeDutyCycle(80)
+    Car.pwm_ENA.ChangeDutyCycle(speed)
+    Car.pwm_ENB.ChangeDutyCycle(speed2)
 
   #小车原地右转
-  def spin_right():
+  def spin_right(self, speed=80, speed2=80):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
     GPIO.output(IN4, GPIO.HIGH)
-    Car.pwm_ENA.ChangeDutyCycle(80)
-    Car.pwm_ENB.ChangeDutyCycle(80)
+    Car.pwm_ENA.ChangeDutyCycle(speed)
+    Car.pwm_ENB.ChangeDutyCycle(speed2)
 
   #小车停止
   def stop(self):
@@ -146,19 +151,117 @@ class Car:
     else :
         GPIO.output(buzzer, GPIO.HIGH)
 
+  #舵机旋转超声波测距避障，led根据车的状态显示相应的颜色
+  def avoid_collision(self):
+    print("!!! "+sys._getframe().f_code.co_name)
+    #开红灯
+    color.red()
+    #获取雷达instance
+    sen = Sensor()
+    #获取camera instance
+    cam = Camera()
+    #先退一点点
+    self.backward(50, 50)
+    time.sleep(0.5)
+    self.stop()
+	
+    #舵机旋转到0度，即右侧，测距
+    cam.radar_reset_right()
+    time.sleep(0.5)
+    rightdistance = sen.radar_distance_calculate()
+    print 'rightdistance='+str(rightdistance)
+    #舵机旋转到180度，即左侧，测距
+    cam.radar_reset_left()
+    time.sleep(0.5)
+    leftdistance = sen.radar_distance_calculate()
+    print 'leftdistance='+str(leftdistance)
+    #舵机旋转到90度，即前方，测距
+    cam.radar_reset()
+    time.sleep(0.5)
+    frontdistance = sen.radar_distance_calculate()
+    print 'frontdistance='+str(frontdistance)
+    
+    if leftdistance < 30 and rightdistance < 30 and frontdistance < 30:
+        #亮品红色，掉头
+        color.on()
+        self.spin_right(85, 85)
+        time.sleep(1)
+    elif leftdistance >= rightdistance:
+        #亮蓝色
+        color.blue()
+        self.spin_left(85, 85)
+        time.sleep(0.5)
+    elif leftdistance <= rightdistance:
+        #亮品红色，向右转
+        color.green()
+        self.spin_right(85, 85)
+        time.sleep(0.5)
+
+    print("!!! quit !!! "+sys._getframe().f_code.co_name)
+    return
+
+  # 超声波雷达避障自主行走
+  def radar_self_drive(self, isEnable):
+    print(sys._getframe().f_code.co_name)
+    global g_radar_self_drive
+    print 'radar_self_drive isEnable=' + str(isEnable)
+    print 'radar_self_drive g_radar_self_drive=' + str(g_radar_self_drive)
+    g_radar_self_drive = isEnable
+    sen = Sensor()
+    while g_radar_self_drive:
+        distance = sen.radar_distance_calculate()
+        print "dis="+str(distance)
+        if distance > 50:
+            #先检查红外避障
+            #遇到障碍物,红外避障模块的指示灯亮,端口电平为LOW
+            #未遇到障碍物,红外避障模块的指示灯灭,端口电平为HIGH
+            ret = sen.infrared_sensor()
+            LeftSensorValue = ret[0]
+            RightSensorValue = ret[1]
+            print "LeftSensorValue="+str(LeftSensorValue) + " RightSensorValue="+str(RightSensorValue)
+            if LeftSensorValue == True and RightSensorValue == True :
+                self.forward()         #当两侧均未检测到障碍物时调用前进函数
+            elif LeftSensorValue == True and RightSensorValue == False :
+                self.spin_left(85, 85)     #右边探测到有障碍物，有信号返回，原地向左转
+                time.sleep(0.5)
+            elif RightSensorValue == True and LeftSensorValue == False:
+                self.spin_right(85, 85)    #左边探测到有障碍物，有信号返回，原地向右转
+                time.sleep(0.5)				
+            elif RightSensorValue == False and LeftSensorValue == False :
+                self.spin_right(85, 85)    #当两侧均检测到障碍物时调用固定方向的避障(原地右转)
+                time.sleep(0.5)
+            self.forward(50, 50)
+        elif 30 <= distance <= 50:
+            #先检查红外避障
+            #遇到障碍物,红外避障模块的指示灯亮,端口电平为LOW
+            #未遇到障碍物,红外避障模块的指示灯灭,端口电平为HIGH
+            ret = sen.infrared_sensor()
+            LeftSensorValue = ret[0]
+            RightSensorValue = ret[1]
+            print "LeftSensorValue="+str(LeftSensorValue) + " RightSensorValue="+str(RightSensorValue)
+            if LeftSensorValue == True and RightSensorValue == True :
+                self.forward()         #当两侧均未检测到障碍物时调用前进函数
+            elif LeftSensorValue == True and RightSensorValue == False :
+                self.spin_left(85, 85)     #右边探测到有障碍物，有信号返回，原地向左转
+                time.sleep(0.5)
+            elif RightSensorValue == True and LeftSensorValue == False:
+                self.spin_right(85, 85)    #左边探测到有障碍物，有信号返回，原地向右转
+                time.sleep(0.5)				
+            elif RightSensorValue == False and LeftSensorValue == False :
+                self.spin_right(85, 85)    #当两侧均检测到障碍物时调用固定方向的避障(原地右转)
+                time.sleep(0.5)
+            self.forward(50, 50)
+        elif distance < 30:
+            self.avoid_collision()
 
 
 
-#car = Car()
-#car.forward()
-#time.sleep(1)
-#car.stop()
 
-
-
-
-
-
-
-
-
+'''
+car = Car()
+car.radar_self_drive(True)
+'''
+'''
+time.sleep(10)
+car.stop()
+'''

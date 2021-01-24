@@ -3,6 +3,7 @@
 from flask import Flask, redirect, url_for, render_template
 import json
 import color
+import time
 from car_run import Car
 from camera import Camera
 from sensor import Sensor
@@ -56,7 +57,6 @@ def car_left():
 @app.route('/car_right')
 def car_right():
     car = Car()
-
     car.rightturn()
     return ("nothing")
 
@@ -65,6 +65,16 @@ def car_stop():
     car = Car()
     car.stop()
     return ("nothing")
+
+# 超声波雷达避障自主行走
+@app.route('/radar_self_drive/<isEnable>', methods=['GET', 'POST'])
+def radar_self_drive():
+    print 'radar_self_drive ' + str(isEnable)
+    car = Car()
+    car.buzzer(True)
+    time.sleep(0.2)
+    car.buzzer(False)
+    car.radar_self_drive(isEnable)
 
 # 摄像头
 @app.route('/camera_up')
@@ -126,17 +136,16 @@ def buzzer(buzzeron):
     return ("nothing")
 
 # 雷达舵机
-#我的雷达反过来装的，所以左右和原来的设置是相反的
 @app.route('/radar_left')
 def radar_left():
     cam = Camera()
-    cam.radar_right() #左右正好相反
+    cam.radar_left()
     return ("nothing")
 
 @app.route('/radar_right')
 def radar_right():
     cam = Camera()
-    cam.radar_left() #左右正好相反
+    cam.radar_right()
     return ("nothing")
 
 @app.route('/radar_stop')
@@ -154,13 +163,13 @@ def radar_reset():
 @app.route('/radar_reset_left')
 def radar_reset_left():
     cam = Camera()
-    cam.radar_reset_right() #左右正好相反
+    cam.radar_reset_left() 
     return ("nothing")
 
 @app.route('/radar_reset_right')
 def radar_reset_right():
     cam = Camera()
-    cam.radar_reset_left() #左右正好相反
+    cam.radar_reset_right() 
     return ("nothing")
 
 #传感器
@@ -179,6 +188,7 @@ def infrared_sensor():
 @app.route('/sensor', methods=['GET', 'POST'])
 def sensor():
     sen = Sensor()
+    '''
     print "红外:"
     print sen.infrared_sensor()
     print "循迹:"
@@ -187,6 +197,7 @@ def sensor():
     print sen.light_sensor()
     print "超声波雷达测距(单位cm):"
     print sen.radar_distance_calculate()
+    '''
     ret = {}
     ret['infrared_sensor'] = sen.infrared_sensor()
     ret['track_sensor'] = sen.track_sensor()
@@ -194,6 +205,11 @@ def sensor():
     ret['radar_distance_calculate'] = sen.radar_distance_calculate()
     json_str = json.dumps(ret)
     return json_str
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run("0.0.0.0",3000)

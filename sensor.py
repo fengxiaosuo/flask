@@ -34,11 +34,6 @@ GPIO.setmode(GPIO.BCM)
 #忽略警告信息
 GPIO.setwarnings(False)
 
-#初始化上下左右角度为90度
-g_leftright_pos = 90
-g_updown_pos = 90
-g_radar_pos = 90
-
 class Sensor(object):
   _instance_lock = threading.Lock()
   allow_leftright_moving = 0

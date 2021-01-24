@@ -372,8 +372,18 @@ $(function() {
 	return false;
   });
 });
-
-
+// 超声波雷达避障自主行走
+$(function() {
+  $('#radar_self_drive').on('click', function(e) {
+	e.preventDefault()
+	$.getJSON('/radar_self_drive',
+	  function(data) {
+	  //do nothing
+	});
+	document.getElementById("status").innerHTML="radar_self_drive";
+	return false;
+  });
+});
 
 </script>
 <script language=javascript>
@@ -416,6 +426,7 @@ function sensor_get_value()
   <body>
   <div data-role="panel" id="myPanel"> 
     <h2>四驱车设置</h2>
+	<button id="radar_self_drive" class="ui-btn ui-corner-all ui-shadow">雷达避障自主行走</button>
 	<input type="checkbox" id="camera_switch"><label for="camera_switch">摄像头切换</label>
 	<label for="points">灯光选择</label>
 	<ul data-role="listview" data-inset="true">    
@@ -435,7 +446,7 @@ function sensor_get_value()
 	<div data-role="header">
 	<a href="#myPanel"  id="setup" class="ui-btn ui-corner-all ui-shadow ui-icon-bars ui-btn-icon-left">设置</a>
 	<h1>树莓派四驱车</h1>
-	<button id="buzzer" class="ui-btn ui-btn-inline ui-icon-audio ui-btn-icon-left">鸣笛</button>
+	<button id="buzzer" class="ui-btn ui-corner-all ui-shadow ui-icon-audio ui-btn-icon-left">鸣笛</button>
 	</div>
     <img style="max-width:100%; height: auto;" src="http://192.168.31.186:8080/?action=stream" />
     <div data-role="controlgroup" data-type="horizontal">

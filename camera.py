@@ -26,6 +26,9 @@ g_leftright_pos = 90
 g_updown_pos = 90
 g_radar_pos = 90
 
+#雷达安装角度
+g_radar_revert = True
+
 class Camera(object):
   _instance_lock = threading.Lock()
   allow_leftright_moving = 0
@@ -155,17 +158,23 @@ class Camera(object):
     Camera.updown_servo.ChangeDutyCycle(0)	#归零信号
 
   #雷达相关，左右停，重置
-  #我的雷达反过来装的，所以左右和原来的设置是相反的
+
   def radar_left(self):
     Camera.allow_radar_moving = 1
     global g_radar_pos
     pos = g_radar_pos
     print ('radar_left at pos='+str(pos))
     while Camera.allow_radar_moving == 1:
-        if g_radar_pos >= 180:
-            g_radar_pos = 180
-            break
-        pos += 0.7
+        if g_radar_revert : #我的雷达反过来装的，所以左右和原来的设置是相反的，所以是True
+            if g_radar_pos <= 0:
+                g_radar_pos =  0
+                break
+            pos -= 0.7
+        else :
+            if g_radar_pos >= 180:
+                g_radar_pos = 180
+                break
+            pos += 0.7
         g_radar_pos = pos
         self.radarservo_appointed_detection(pos)
         print ('g_radar_pos='+str(pos))
@@ -176,10 +185,16 @@ class Camera(object):
     pos = g_radar_pos
     print ('radar_right at pos='+str(pos))
     while Camera.allow_radar_moving == 1:
-        if g_radar_pos <= 0:
-            g_radar_pos =  0
-            break
-        pos -= 0.7
+        if g_radar_revert : #我的雷达反过来装的，所以左右和原来的设置是相反的，所以是True
+            if g_radar_pos >= 180:
+                g_radar_pos = 180
+                break
+            pos += 0.7
+        else :
+            if g_radar_pos <= 0:
+                g_radar_pos =  0
+                break
+            pos -= 0.7
         g_radar_pos = pos
         self.radarservo_appointed_detection(pos)
         print ('g_radar_pos='+str(pos))
@@ -198,16 +213,26 @@ class Camera(object):
 
   def radar_reset_left(self):
     global g_radar_pos
-    self.radarservo_appointed_detection(180)
-    time.sleep(0.5)
-    g_radar_pos = 180    #复位到90度
+    if g_radar_revert : #我的雷达反过来装的，所以左右和原来的设置是相反的，所以是True
+        self.radarservo_appointed_detection(0)
+        time.sleep(0.5)
+        g_radar_pos = 0    #复位到0度
+    else :
+        self.radarservo_appointed_detection(180)
+        time.sleep(0.5)
+        g_radar_pos = 180    #复位到180度
     Camera.radar_servo.ChangeDutyCycle(0)	#归零信号
     print ('radar_reset_left at pos='+str(g_radar_pos))
 
   def radar_reset_right(self):
     global g_radar_pos
-    self.radarservo_appointed_detection(0)
-    time.sleep(0.5)
-    g_radar_pos = 0    #复位到90度
+    if g_radar_revert : #我的雷达反过来装的，所以左右和原来的设置是相反的，所以是True
+        self.radarservo_appointed_detection(180)
+        time.sleep(0.5)
+        g_radar_pos = 180    #复位到180度
+    else :
+        self.radarservo_appointed_detection(0)
+        time.sleep(0.5)
+        g_radar_pos = 0    #复位到0度
     Camera.radar_servo.ChangeDutyCycle(0)	#归零信号
     print ('radar_reset_right at pos='+str(g_radar_pos))
