@@ -58,7 +58,7 @@ class Car:
     GPIO.setup(buzzer,GPIO.OUT,initial=GPIO.HIGH)
 
   #小车前进
-  def forward(self, speed=100, speed2=100):
+  def forward(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
@@ -67,9 +67,12 @@ class Car:
     #启动PWM设置占空比为100（0--100）
     Car.pwm_ENA.start(speed)
     Car.pwm_ENB.start(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
   #小车后退
-  def backward(self, speed=100, speed2=100):
+  def backward(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
@@ -78,42 +81,62 @@ class Car:
     #启动PWM设置占空比为100（0--100）
     Car.pwm_ENA.start(speed)
     Car.pwm_ENB.start(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
   #小车左转
-  def leftturn(self, speed=100, speed2=100):
+  def leftturn(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.HIGH)
     GPIO.output(IN4, GPIO.LOW)
     #启动PWM设置占空比为100（0--100）
     Car.pwm_ENA.start(speed)
     Car.pwm_ENB.start(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
   #小车右转
-  def rightturn(self, speed=100, speed2=100):
+  def rightturn(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
     GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
     #启动PWM设置占空比为100（0--100）
     Car.pwm_ENA.start(speed)
     Car.pwm_ENB.start(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
-  #小车掉头
+  #小车掉头, then stop
   def uturn(self):
     print(sys._getframe().f_code.co_name)
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.LOW)
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.LOW)
-    #启动PWM设置占空比为100（0--100）
-    Car.pwm_ENA.start(100)
-    Car.pwm_ENB.start(100)
+    self.spin_right(100, 100)
+    time.sleep(3)
+    self.stop()
+    print(sys._getframe().f_code.co_name + " out")
+
+  def turnleft(self):
+    print(sys._getframe().f_code.co_name)
+    self.spin_left(100, 100)
+    time.sleep(1.5)
+    self.stop()
+    print(sys._getframe().f_code.co_name + " out")
+
+  def turnright(self):
+    print(sys._getframe().f_code.co_name)
+    self.spin_right(100, 100)
+    time.sleep(1.5)
+    self.stop()
+    print(sys._getframe().f_code.co_name + " out")
 
   #小车原地左转
-  def spin_left(self, speed=80, speed2=80):
+  def spin_left(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.LOW)
     GPIO.output(IN2, GPIO.HIGH)
@@ -121,9 +144,12 @@ class Car:
     GPIO.output(IN4, GPIO.LOW)
     Car.pwm_ENA.ChangeDutyCycle(speed)
     Car.pwm_ENB.ChangeDutyCycle(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
   #小车原地右转
-  def spin_right(self, speed=80, speed2=80):
+  def spin_right(self, speed=100, speed2=100, isTimeout=False, timeout=10):
     print(sys._getframe().f_code.co_name)
     GPIO.output(IN1, GPIO.HIGH)
     GPIO.output(IN2, GPIO.LOW)
@@ -131,6 +157,9 @@ class Car:
     GPIO.output(IN4, GPIO.HIGH)
     Car.pwm_ENA.ChangeDutyCycle(speed)
     Car.pwm_ENB.ChangeDutyCycle(speed2)
+    if isTimeout :
+	time.sleep(timeout)
+	self.stop()
 
   #小车停止
   def stop(self):
@@ -167,35 +196,38 @@ class Car:
 	
     #舵机旋转到0度，即右侧，测距
     cam.radar_reset_right()
-    time.sleep(0.5)
+    #time.sleep(0.5)
     rightdistance = sen.radar_distance_calculate()
     print 'rightdistance='+str(rightdistance)
     #舵机旋转到180度，即左侧，测距
     cam.radar_reset_left()
-    time.sleep(0.5)
+    #time.sleep(0.5)
     leftdistance = sen.radar_distance_calculate()
     print 'leftdistance='+str(leftdistance)
     #舵机旋转到90度，即前方，测距
     cam.radar_reset()
-    time.sleep(0.5)
+    #time.sleep(0.5)
     frontdistance = sen.radar_distance_calculate()
     print 'frontdistance='+str(frontdistance)
     
     if leftdistance < 30 and rightdistance < 30 and frontdistance < 30:
         #亮白色，掉头
         color.on()
-        self.spin_right(85, 85)
-        time.sleep(1)
+        self.leftturn()
+        time.sleep(3)
+        self.stop()
     elif leftdistance >= rightdistance:
         #亮蓝色
         color.blue()
-        self.spin_left(85, 85)
-        time.sleep(0.5)
+        self.leftturn()
+        time.sleep(1.5)
+        self.stop()
     elif leftdistance <= rightdistance:
         #亮绿色，向右转
         color.green()
-        self.spin_right(85, 85)
-        time.sleep(0.5)
+        self.rightturn()
+        time.sleep(1.5)
+        self.stop()
 
     print("!!! quit !!! "+sys._getframe().f_code.co_name)
     return
@@ -210,7 +242,7 @@ class Car:
     sen = Sensor()
     while g_radar_self_drive:
         distance = sen.radar_distance_calculate()
-        print "dis="+str(distance)
+        print "loooooooooooooop dis="+str(distance)
         if distance > 50:
             #先检查红外避障
             #遇到障碍物,红外避障模块的指示灯亮,端口电平为LOW
@@ -221,16 +253,18 @@ class Car:
             print "LeftSensorValue="+str(LeftSensorValue) + " RightSensorValue="+str(RightSensorValue)
             if LeftSensorValue == True and RightSensorValue == True :
                 self.forward()         #当两侧均未检测到障碍物时调用前进函数
+		time.sleep(1)
             elif LeftSensorValue == True and RightSensorValue == False :
-                self.spin_left(85, 85)     #右边探测到有障碍物，有信号返回，原地向左转
-                time.sleep(0.5)
+                self.leftturn()     #右边探测到有障碍物，有信号返回，原地向左转
+		time.sleep(1)
             elif RightSensorValue == True and LeftSensorValue == False:
-                self.spin_right(85, 85)    #左边探测到有障碍物，有信号返回，原地向右转
-                time.sleep(0.5)				
+                self.rightturn()    #左边探测到有障碍物，有信号返回，原地向右转
+		time.sleep(1)			
             elif RightSensorValue == False and LeftSensorValue == False :
-                self.spin_right(85, 85)    #当两侧均检测到障碍物时调用固定方向的避障(原地右转)
-                time.sleep(0.5)
-            self.forward(50, 50)
+                self.leftturn()    #当两侧均检测到障碍物时调用固定方向的避障(uturn)
+		time.sleep(3)
+		self.forward()
+	    self.stop()
         elif 30 <= distance <= 50:
             #先检查红外避障
             #遇到障碍物,红外避障模块的指示灯亮,端口电平为LOW
@@ -242,23 +276,37 @@ class Car:
             if LeftSensorValue == True and RightSensorValue == True :
                 self.forward()         #当两侧均未检测到障碍物时调用前进函数
             elif LeftSensorValue == True and RightSensorValue == False :
-                self.spin_left(85, 85)     #右边探测到有障碍物，有信号返回，原地向左转
-                time.sleep(0.5)
+                self.leftturn()     #右边探测到有障碍物，有信号返回，原地向左转
+		time.sleep(1)
             elif RightSensorValue == True and LeftSensorValue == False:
-                self.spin_right(85, 85)    #左边探测到有障碍物，有信号返回，原地向右转
-                time.sleep(0.5)				
+                self.rightturn()    #左边探测到有障碍物，有信号返回，原地向右转
+		time.sleep(1)			
             elif RightSensorValue == False and LeftSensorValue == False :
-                self.spin_right(85, 85)    #当两侧均检测到障碍物时调用固定方向的避障(原地右转)
-                time.sleep(0.5)
-            self.forward(50, 50)
+                self.leftturn()    #当两侧均检测到障碍物时调用固定方向的避障(uturn)
+		time.sleep(3)
+		self.forward(60,60)
+            self.stop()
         elif distance < 30:
             self.avoid_collision()
 
 
-'''
 
+
+
+
+
+'''
 car = Car()
+car.uturn()
+car.stop()
+car.turnleft()
+car.turnright()
+car.forward()
+time.sleep(1)
+car.stop()
 car.radar_self_drive(True)
+input("Press Enter to continue...")
+car.radar_self_drive(False)
 '''
 '''
 time.sleep(10)

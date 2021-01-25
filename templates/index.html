@@ -402,7 +402,7 @@ $(function() {
 </script>
 <script language=javascript>
 //获取传感器值
-var int=self.setInterval("sensor_get_value()",11500)
+var int=self.setInterval("sensor_get_value()",1000)
 $.ajax({
 url: "sensor",
 type: "POST",
@@ -441,7 +441,6 @@ function sensor_get_value()
   <div data-role="panel" id="myPanel"> 
     <h2>四驱车设置</h2>
 	<input type="checkbox" id="radar_self_drive"><label for="radar_self_drive">雷达避障自主行走</label>
-	<button id="radar_self_drive1" class="ui-btn ui-corner-all ui-shadow">雷达避障自主行走1</button>
 	<input type="checkbox" id="camera_switch"><label for="camera_switch">摄像头切换</label>
 	<label for="points">灯光选择</label>
 	<ul data-role="listview" data-inset="true">    
