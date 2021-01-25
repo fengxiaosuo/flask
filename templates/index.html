@@ -373,14 +373,28 @@ $(function() {
   });
 });
 // 超声波雷达避障自主行走
+is_radar_self_drive = false;
 $(function() {
   $('#radar_self_drive').on('click', function(e) {
 	e.preventDefault()
-	$.getJSON('/radar_self_drive',
+	//is_radar_self_drive = !is_radar_self_drive;
+	is_radar_self_drive  = $("#radar_self_drive").prop("checked")
+	if(is_radar_self_drive)
+	{
+	$.getJSON('/radar_self_drive/true',
 	  function(data) {
 	  //do nothing
 	});
 	document.getElementById("status").innerHTML="radar_self_drive";
+	}
+	else
+	{
+	$.getJSON('/radar_self_drive/false',
+	  function(data) {
+	  //do nothing
+	});
+	document.getElementById("status").innerHTML="radar_self_drive";
+	}
 	return false;
   });
 });
@@ -388,7 +402,7 @@ $(function() {
 </script>
 <script language=javascript>
 //获取传感器值
-var int=self.setInterval("sensor_get_value()",500)
+var int=self.setInterval("sensor_get_value()",11500)
 $.ajax({
 url: "sensor",
 type: "POST",
@@ -426,7 +440,8 @@ function sensor_get_value()
   <body>
   <div data-role="panel" id="myPanel"> 
     <h2>四驱车设置</h2>
-	<button id="radar_self_drive" class="ui-btn ui-corner-all ui-shadow">雷达避障自主行走</button>
+	<input type="checkbox" id="radar_self_drive"><label for="radar_self_drive">雷达避障自主行走</label>
+	<button id="radar_self_drive1" class="ui-btn ui-corner-all ui-shadow">雷达避障自主行走1</button>
 	<input type="checkbox" id="camera_switch"><label for="camera_switch">摄像头切换</label>
 	<label for="points">灯光选择</label>
 	<ul data-role="listview" data-inset="true">    
@@ -469,7 +484,6 @@ function sensor_get_value()
 	<a href="#" id="radar_reset_left"><button class="ui-btn ui-btn-inline">左</button></a>
 	<a href="#" id="radar_reset_right"><button class="ui-btn ui-btn-inline">右</button></a>
 	</div>
-
 	<p id="status">状态框</p>
 	<div data-role="footer" style="text-align:center;">
 	  <div data-role="controlgroup" data-type="horizontal">
@@ -483,3 +497,4 @@ function sensor_get_value()
     </center>
   </body>
 </html>
+file:///home/pi/4wd/flask/index.py

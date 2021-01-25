@@ -68,13 +68,16 @@ def car_stop():
 
 # 超声波雷达避障自主行走
 @app.route('/radar_self_drive/<isEnable>', methods=['GET', 'POST'])
-def radar_self_drive():
+def radar_self_drive(isEnable):
     print 'radar_self_drive ' + str(isEnable)
     car = Car()
     car.buzzer(True)
     time.sleep(0.2)
     car.buzzer(False)
-    car.radar_self_drive(isEnable)
+    if('true'==isEnable) :
+    	car.radar_self_drive(True)
+    else :
+	car.radar_self_drive(False)
 
 # 摄像头
 @app.route('/camera_up')

@@ -182,7 +182,7 @@ class Car:
     print 'frontdistance='+str(frontdistance)
     
     if leftdistance < 30 and rightdistance < 30 and frontdistance < 30:
-        #亮品红色，掉头
+        #亮白色，掉头
         color.on()
         self.spin_right(85, 85)
         time.sleep(1)
@@ -192,7 +192,7 @@ class Car:
         self.spin_left(85, 85)
         time.sleep(0.5)
     elif leftdistance <= rightdistance:
-        #亮品红色，向右转
+        #亮绿色，向右转
         color.green()
         self.spin_right(85, 85)
         time.sleep(0.5)
@@ -255,9 +255,8 @@ class Car:
             self.avoid_collision()
 
 
-
-
 '''
+
 car = Car()
 car.radar_self_drive(True)
 '''
