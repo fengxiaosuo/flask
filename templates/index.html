@@ -433,11 +433,25 @@ function sensor_get_value()
 	})
 	return false;
 }
-
+function get_ip()
+{
+	var server_ip;
+	$.ajax({
+	url: "get_ip",
+	type: "POST",
+	dataType: "json",
+	success: function (data) {
+	  var str1="http://"
+	  var str2=":8080/?action=stream"
+	  document.getElementById("mjpg-streamer").src=str1+data.ip+str2;
+	}
+	})
+	return false;
+}
 </script>
 
   </head>
-  <body>
+  <body onload="get_ip()">
   <div data-role="panel" id="myPanel"> 
     <h2>四驱车设置</h2>
 	<input type="checkbox" id="radar_self_drive"><label for="radar_self_drive">雷达避障自主行走</label>
@@ -462,7 +476,7 @@ function sensor_get_value()
 	<h1>树莓派四驱车</h1>
 	<button id="buzzer" class="ui-btn ui-corner-all ui-shadow ui-icon-audio ui-btn-icon-left">鸣笛</button>
 	</div>
-    <img style="max-width:100%; height: auto;" src="http://192.168.31.186:8080/?action=stream" />
+    <img style="max-width:100%; height: auto;" id="mjpg-streamer" src="" />
     <div data-role="controlgroup" data-type="horizontal">
 	<a href="#" id="car_fwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-u ui-btn-icon-left">前进</button></a>
 	<a href="#" id="car_bwd"><button class="ui-btn ui-btn-inline ui-icon-arrow-d ui-btn-icon-left">后退</button></a>
@@ -496,4 +510,5 @@ function sensor_get_value()
     </center>
   </body>
 </html>
-file:///home/pi/4wd/flask/index.py
+file:///home/pi/4wd/flask/index.py
+

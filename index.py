@@ -7,6 +7,7 @@ import time
 from car_run import Car
 from camera import Camera
 from sensor import Sensor
+import getip
 
 app = Flask(__name__)
 
@@ -209,9 +210,13 @@ def sensor():
     json_str = json.dumps(ret)
     return json_str
 
-
-
-
+#获取本机IP
+@app.route('/get_ip', methods=['GET', 'POST'])
+def get_ip():
+    ret = {}
+    ret['ip'] = getip.getLocalIP()
+    json_str = json.dumps(ret)
+    return json_str
 
 
 if __name__ == '__main__':
